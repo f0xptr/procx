@@ -19,7 +19,7 @@ jobs:
     # Steps that define the sequence of tasks for the job
     steps:
     # Step 1: Checkout the repository code
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
 
     # Step 2: Install necessary build dependencies
     - name: Install dependencies
