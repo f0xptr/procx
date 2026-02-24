@@ -1,0 +1,4 @@
+# .clang-format-ignore
+# Files and directories to be ignored by clang-format.
+
+build/

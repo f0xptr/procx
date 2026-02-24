@@ -1,0 +1,17 @@
+# Build artifacts
+build/
+*.o
+*.out
+*.exe
+procx
+test_runner
+
+# Editor-specific files
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db

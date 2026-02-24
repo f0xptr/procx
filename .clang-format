@@ -1,0 +1,26 @@
+# .clang-format
+# Simplified configuration for clang-format for C projects.
+# Based on Google style with C-specific adjustments.
+
+Language: C
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+BreakBeforeBraces: Attach
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+SortIncludes: false # Recommended for C to preserve logical grouping
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: '^"(.*)"$' # Project-specific headers (e.g., #include "myheader.h")
+    Priority: 2
+  - Regex: '^<(.*)>$' # System/library headers (e.g., #include <stdio.h>)
+    Priority: 1
+---
+# Specific overrides if needed
+# For C-only projects, many C++-specific options might be unrecognized or lead to errors.
+# The options above are generally safe for C.

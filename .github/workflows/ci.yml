@@ -1,0 +1,36 @@
+# Workflow name
+name: CI
+
+# Triggers for the workflow
+on:
+  # Run on pushes to the 'main' branch
+  push:
+    branches: [ main ]
+  # Run on pull requests targeting the 'main' branch
+  pull_request:
+    branches: [ main ]
+
+# Define a single job named 'build'
+jobs:
+  build:
+    # Specify the operating system to run the job on
+    runs-on: ubuntu-latest
+
+    # Steps that define the sequence of tasks for the job
+    steps:
+    # Step 1: Checkout the repository code
+    - uses: actions/checkout@v2
+
+    # Step 2: Install necessary build dependencies
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential libncurses-dev
+
+    # Step 3: Build the ProcX project using the Makefile
+    - name: Build project
+      run: make
+
+    # Step 4: Run the unit tests defined in the Makefile
+    - name: Run tests
+      run: make test

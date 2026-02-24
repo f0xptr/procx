@@ -1,0 +1,23 @@
+# .clang-tidy.in
+# Template for clang-tidy configuration.
+# This file can be renamed to .clang-tidy and customized.
+# For a full list of checks, see: https://clang.llvm.org/extra/clang-tidy/checks/list.html
+
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  portability-*,
+  cppcoreguidelines-*,
+  cert-*,
+  misc-*,
+  hicpp-*
+
+WarningsAsErrors: ""
+HeaderFilterRegex: ""
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+User: ""
