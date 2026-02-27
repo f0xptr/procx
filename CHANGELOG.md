@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-02-27
+
+### Added
+
+*   **Process Selection**: Interactive selection bar to highlight specific processes.
+*   **Process Management**: Ability to kill processes directly from the UI using the 'K' key with a confirmation dialog.
+*   **Per-Process CPU Usage**: Real-time CPU percentage calculation for each individual process.
+*   **Dynamic Sorting**: Sort processes by PID (F1), CPU usage (F3), Memory (F4), or Name (F5).
+*   **Real-time Filtering**: Search and filter processes by name using the '/' key.
+*   **System Metrics**: Added System Uptime and Load Average (1, 5, 15 min) to the dashboard header.
+*   **Help Overlay**: Interactive help screen accessible via 'H' key.
+*   **Refresh Rate Control**: Adjust the dashboard update frequency using '+' and '-' keys.
+*   **Improved Robustness**: Better handling of `/proc` parsing and permission restrictions.
+
+### Changed
+
+*   Updated UI layout to accommodate new metrics and information columns.
+*   Refactored process information gathering for better accuracy and performance.
+*   Enhanced Doxygen documentation throughout the codebase with professional English grammar.
+
 ## [1.0.0] - 2026-02-24
 
 ### Added

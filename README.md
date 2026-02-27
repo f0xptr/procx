@@ -1,73 +1,80 @@
-# ProcX
+# ProcX v1.1.0
 
-ProcX is a lightweight, ncurses-based process explorer and system monitoring tool for Linux. Written in C, it provides an aesthetic, real-time overview of running processes, CPU, memory, and swap usage directly in your terminal, offering an 'htop'-like experience.
+ProcX is a lightweight, high-performance, ncurses-based process explorer and system monitoring tool for Linux. Written in C, it provides a modern, aesthetic, and real-time overview of your system's health, offering an interactive 'htop'-like experience directly in your terminal.
 
 ## Features
 
-*   Real-time display of active processes.
-*   Monitoring of CPU, memory, and swap utilization.
-*   Process details including PID, user, parent PID, threads, state, and memory usage.
-*   Interactive UI with scrolling capabilities.
+*   **Real-time Monitoring**: Live updates of CPU, Memory, and Swap utilization meters.
+*   **Process Management**: Identify and terminate (`SIGTERM`) processes with a safety confirmation dialog.
+*   **Detailed Insights**: Displays PID, User, CPU%, Threads, State, Memory (MB), PPID, and Command.
+*   **Aesthetic UI**: Modern color-coded interface with smooth scrolling and high readability.
+*   **System Health**: Real-time load averages and system uptime tracking.
 
 ## Building ProcX
 
-To build ProcX from source, you first need to clone the repository:
+To build ProcX from source, clone the repository and ensure you have the necessary dependencies.
 
 ```bash
 git clone https://github.com/f0xptr/procx.git
 cd procx
 ```
 
-Then, ensure you have a C compiler (like GCC) and the `ncurses` development libraries installed.
-
 ### Prerequisites
 
-On Debian/Ubuntu-based systems:
+*   A C compiler (GCC or Clang)
+*   `make` build tool
+*   `ncurses` development libraries
+
+**Debian/Ubuntu**:
 ```bash
-sudo apt update
-sudo apt install build-essential libncurses-dev
+sudo apt update && sudo apt install build-essential libncurses-dev
 ```
 
-On Fedora/RHEL-based systems:
+**Fedora/RHEL**:
 ```bash
 sudo dnf install gcc make ncurses-devel
 ```
 
 ### Compilation
 
-Navigate to the root directory of the ProcX project and run `make`:
+Run `make` in the root directory:
 ```bash
 make
 ```
-
-This will compile the source files and create the `procx` executable in the project root.
+The `procx` executable will be generated in the project root.
 
 ## Running ProcX
 
-After successful compilation, you can run ProcX from your terminal:
 ```bash
 ./procx
 ```
 
-### Controls
+### Keyboard Controls
 
-*   `q` or `Q`: Quit ProcX.
-*   `Arrow Up`: Scroll up the process list.
-*   `Arrow Down`: Scroll down the process list.
+| Key | Action |
+|-----|--------|
+| `UP` / `DOWN` | Navigate and select processes in the list |
+| `F1` | Sort by **PID** |
+| `F3` | Sort by **CPU%** |
+| `F4` | Sort by **Memory usage** |
+| `F5` | Sort by **Process Name** |
+| `/` | **Search** / Filter processes by name |
+| `K` | **Kill** the selected process (requires confirmation) |
+| `H` | Toggle **Help** overlay |
+| `+` / `-` | Increase / Decrease refresh frequency |
+| `Q` | Quit ProcX |
 
 ## Running Tests
 
-The project includes a basic unit test for system information parsing. To run it:
+ProcX includes unit tests for system information parsing:
 ```bash
 make test
 ```
 
 ## Contributing
 
-We welcome contributions to ProcX! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
-
-Please note that this project is released with a [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our workflow and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community guidelines.
 
 ## License
 
-ProcX is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+ProcX is open-source software licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.

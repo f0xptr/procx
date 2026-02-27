@@ -1,7 +1,7 @@
 /**
  * @file process_list.h
- * @brief Functions to scan and build a list of all running processes.
- * @version 1.0.0
+ * @brief Functions to scan, build, and sort the list of all running processes.
+ * @version 1.1.0
  */
 
 #ifndef PROCX_PROCESS_LIST_H
@@ -20,5 +20,32 @@ ProcessNode* build_process_list();
  * @param head Pointer to the head of the list.
  */
 void free_process_list(ProcessNode* head);
+
+/**
+ * @brief Sorts the process list using a custom comparison function.
+ * @param head_ref Pointer to the pointer of the head node.
+ * @param cmp Comparison function to use for sorting.
+ */
+void sort_process_list(ProcessNode** head_ref, int (*cmp)(ProcessNode*, ProcessNode*));
+
+/**
+ * @brief Comparison function for PIDs.
+ */
+int cmp_pid(ProcessNode* a, ProcessNode* b);
+
+/**
+ * @brief Comparison function for CPU usage.
+ */
+int cmp_cpu(ProcessNode* a, ProcessNode* b);
+
+/**
+ * @brief Comparison function for Memory usage.
+ */
+int cmp_mem(ProcessNode* a, ProcessNode* b);
+
+/**
+ * @brief Comparison function for Process names.
+ */
+int cmp_name(ProcessNode* a, ProcessNode* b);
 
 #endif  // PROCX_PROCESS_LIST_H

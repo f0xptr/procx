@@ -1,7 +1,7 @@
 /**
  * @file display.h
  * @brief UI functions using ncurses for an aesthetic terminal display.
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 #ifndef PROCX_DISPLAY_H
@@ -11,20 +11,33 @@
 
 /**
  * @brief Initializes the ncurses user interface.
- * Sets up colors, hides the cursor, and enables keypad input.
  */
 void init_ui();
 
 /**
- * @brief Renders the main aesthetic dashboard with dynamic data.
- * * @param head Pointer to the head of the ProcessNode linked list.
- * @param scroll_offset The number of rows to skip (for scrolling functionality).
+ * @brief Renders the main aesthetic dashboard.
+ * @param head Pointer to the process list.
+ * @param scroll_offset Number of rows to skip.
+ * @param selection_idx Index of the currently selected process.
+ * @param search_query Current search string.
+ * @param sort_col Current sorting column name.
  */
-void render_dashboard(ProcessNode* head, int scroll_offset);
+void render_dashboard(ProcessNode* head, int scroll_offset, int selection_idx, const char* search_query, const char* sort_col);
+
+/**
+ * @brief Renders the help overlay.
+ */
+void render_help();
+
+/**
+ * @brief Renders a confirmation dialog for killing a process.
+ * @param pid The PID to kill.
+ * @return 1 if confirmed, 0 otherwise.
+ */
+int render_confirmation(int pid);
 
 /**
  * @brief Cleans up and closes the ncurses interface.
- * Restores the terminal to its normal state.
  */
 void close_ui();
 

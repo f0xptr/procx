@@ -1,7 +1,7 @@
 /**
  * @file sys_info.c
  * @brief Implementation of system info parsing from /proc.
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 #include "../../include/system/sys_info.h"
@@ -13,14 +13,21 @@
 
 int get_process_info(pid_t pid, ProcessNode* info) {
     char path[256];
+    FILE* file;
 
-    // Get basic process information (name, state)
+    // Get basic process information (name, state, ppid, utime, stime)
     snprintf(path, sizeof(path), "/proc/%d/stat", pid);
-    FILE* file = fopen(path, "r");
+    file = fopen(path, "r");
     if (!file) return -1;
 
     info->pid = pid;
-    fscanf(file, "%*d (%255[^)]) %c", info->name, &info->state);
+    // Format: pid (comm) state ppid pgrp session tty_nr tpgid flags minflt cminflt majflt cmajflt utime stime ...
+    // utime is 14th field, stime is 15th field
+    if (fscanf(file, "%*d (%255[^)]) %c %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", 
+               info->name, &info->state, &info->ppid, &info->utime, &info->stime) < 5) {
+        fclose(file);
+        return -1;
+    }
     fclose(file);
 
     // Get memory information (Resident Set Size)
@@ -28,9 +35,8 @@ int get_process_info(pid_t pid, ProcessNode* info) {
     file = fopen(path, "r");
     if (file) {
         long dummy, rss;
-        // statm format: size resident shared text lib data dt
         if (fscanf(file, "%ld %ld", &dummy, &rss) == 2) {
-            long page_size  = sysconf(_SC_PAGESIZE) / 1024;  // in KB
+            long page_size  = sysconf(_SC_PAGESIZE) / 1024;
             info->memory_kb = rss * page_size;
         } else {
             info->memory_kb = 0;
@@ -40,26 +46,22 @@ int get_process_info(pid_t pid, ProcessNode* info) {
         info->memory_kb = 0;
     }
 
-    // Get UID, PPID, and Threads from status file
+    // Get UID and Threads from status file
     snprintf(path, sizeof(path), "/proc/%d/status", pid);
     file = fopen(path, "r");
     if (file) {
         char line[256];
         info->uid         = 0;
         info->num_threads = 1;
-        info->ppid        = 0;
         while (fgets(line, sizeof(line), file)) {
             if (strncmp(line, "Uid:", 4) == 0) {
                 sscanf(line, "Uid:\t%u", &info->uid);
             } else if (strncmp(line, "Threads:", 8) == 0) {
                 sscanf(line, "Threads:\t%d", &info->num_threads);
-            } else if (strncmp(line, "PPid:", 5) == 0) {
-                sscanf(line, "PPid:\t%d", &info->ppid);
             }
         }
         fclose(file);
 
-        // Translate UID to Username
         struct passwd* pw = getpwuid(info->uid);
         if (pw) {
             strncpy(info->username, pw->pw_name, sizeof(info->username) - 1);
@@ -70,7 +72,6 @@ int get_process_info(pid_t pid, ProcessNode* info) {
     } else {
         info->uid         = 0;
         info->num_threads = 1;
-        info->ppid        = 0;
         strcpy(info->username, "unknown");
     }
 
@@ -91,6 +92,28 @@ void get_system_info(SystemInfo* sys_info, ProcessNode* head) {
     sys_info->free_swp_kb   = 0;
     sys_info->running_tasks = 0;
     sys_info->total_tasks   = 0;
+    sys_info->uptime_sec    = 0;
+    for(int i=0; i<3; i++) sys_info->load_avg[i] = 0.0;
+
+    // Parse Load Average
+    if (getloadavg(sys_info->load_avg, 3) == -1) {
+        // Fallback to /proc/loadavg if getloadavg fails
+        file = fopen("/proc/loadavg", "r");
+        if (file) {
+            fscanf(file, "%lf %lf %lf", &sys_info->load_avg[0], &sys_info->load_avg[1], &sys_info->load_avg[2]);
+            fclose(file);
+        }
+    }
+
+    // Parse Uptime
+    file = fopen("/proc/uptime", "r");
+    if (file) {
+        double uptime;
+        if (fscanf(file, "%lf", &uptime) == 1) {
+            sys_info->uptime_sec = (long)uptime;
+        }
+        fclose(file);
+    }
 
     // Parse MemInfo
     file = fopen("/proc/meminfo", "r");
@@ -116,7 +139,7 @@ void get_system_info(SystemInfo* sys_info, ProcessNode* head) {
         fclose(file);
 
         long used_mem = sys_info->total_mem_kb - mem_available;
-        if (mem_available == 0) {  // Fallback if MemAvailable is not present
+        if (mem_available == 0) {
             used_mem = sys_info->total_mem_kb - sys_info->free_mem_kb - buffers - cached;
         }
 
@@ -130,7 +153,7 @@ void get_system_info(SystemInfo* sys_info, ProcessNode* head) {
         }
     }
 
-    // Parse CPU information (a simple static approach to estimate CPU for visual appeal)
+    // Global CPU usage
     static unsigned long long prev_user = 0, prev_nice = 0, prev_system = 0, prev_idle = 0;
     static unsigned long long prev_iowait = 0, prev_irq = 0, prev_softirq = 0, prev_steal = 0;
     file = fopen("/proc/stat", "r");
@@ -141,14 +164,10 @@ void get_system_info(SystemInfo* sys_info, ProcessNode* head) {
                        &idle, &iowait, &irq, &softirq, &steal) == 8) {
                 unsigned long long prev_idle_sum = prev_idle + prev_iowait;
                 unsigned long long idle_sum      = idle + iowait;
-
-                unsigned long long prev_non_idle =
-                    prev_user + prev_nice + prev_system + prev_irq + prev_softirq + prev_steal;
+                unsigned long long prev_non_idle = prev_user + prev_nice + prev_system + prev_irq + prev_softirq + prev_steal;
                 unsigned long long non_idle = user + nice + system + irq + softirq + steal;
-
                 unsigned long long prev_total = prev_idle_sum + prev_non_idle;
                 unsigned long long total      = idle_sum + non_idle;
-
                 unsigned long long totald = total - prev_total;
                 unsigned long long idled  = idle_sum - prev_idle_sum;
 
