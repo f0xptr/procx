@@ -10,8 +10,8 @@ CC = gcc
 #   -Iinclude: Add the 'include' directory to the search path for header files
 CFLAGS = -Wall -Wextra -O2 -Iinclude
 # LDFLAGS are linker flags:
-#   -lncurses: Link with the ncurses library for UI functionalities
-LDFLAGS = -lncurses
+#   -lncursesw: Link with the ncursesw library for wide-character UI functionalities
+LDFLAGS = -lncursesw
 
 # Directories for source and object files
 SRC_DIR = src

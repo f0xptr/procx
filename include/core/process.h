@@ -1,7 +1,7 @@
 /**
  * @file process.h
  * @brief Core data structures for ProcX.
- * @version 1.1.1
+ * @version 2.0.0
  */
 
 #ifndef PROCX_PROCESS_H
@@ -25,6 +25,8 @@ typedef struct ProcessNode {
     float               cpu_usage;    /**< CPU usage percentage */
     unsigned long       utime;        /**< User time ticks */
     unsigned long       stime;        /**< Kernel time ticks */
+    long                priority;     /**< Priority of the process */
+    long                nice_value;   /**< Nice value of the process */
     struct ProcessNode* next;         /**< Pointer to the next process in the list */
 } ProcessNode;
 

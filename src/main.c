@@ -1,8 +1,12 @@
 /**
  * @file main.c
  * @brief Entry point for ProcX with interactive loop and advanced features.
- * @version 1.1.1
+ * @version 2.0.0
  */
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 #include "../include/ui/display.h"
 #include "../include/system/process_list.h"
@@ -10,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/resource.h>
 
 /**
  * @brief Main function of the ProcX application.
@@ -38,21 +43,23 @@ int main() {
         render_dashboard(process_list, scroll_offset, selection_idx, search_query, sort_col);
 
         ch = getch();
-        if (ch == 'q' || ch == 'Q') {
+        if (ch == 'q' || ch == 'Q' || ch == KEY_F(10) || ch == 27) {
             free_process_list(process_list);
             break;
         } else if (ch == KEY_DOWN) {
             selection_idx++;
-            // Basic boundary check (could be improved by counting filtered list)
+            // Calculate filtered count
             int          count = 0;
             ProcessNode* curr  = process_list;
             while (curr) {
-                count++;
+                if (search_query[0] == '\0' || strcasestr(curr->name, search_query) != NULL) {
+                    count++;
+                }
                 curr = curr->next;
             }
             if (selection_idx >= count) selection_idx = count - 1;
+            if (selection_idx < 0) selection_idx = 0;
 
-            // Adjust scroll if selection goes off screen
             int max_y = getmaxy(stdscr);
             if (selection_idx - scroll_offset >= max_y - 10) {
                 scroll_offset++;
@@ -64,8 +71,7 @@ int main() {
                 scroll_offset--;
             }
         } else if (ch == KEY_F(1)) {
-            sort_cmp = cmp_pid;
-            strcpy(sort_col, "PID");
+            render_help();
         } else if (ch == KEY_F(3)) {
             sort_cmp = cmp_cpu;
             strcpy(sort_col, "CPU%");
@@ -75,11 +81,47 @@ int main() {
         } else if (ch == KEY_F(5)) {
             sort_cmp = cmp_name;
             strcpy(sort_col, "NAME");
+        } else if (ch == KEY_F(6)) {
+            sort_cmp = cmp_pid;
+            strcpy(sort_col, "PID");
+        } else if (ch == KEY_F(7) || ch == KEY_F(8)) {
+            // Decrease or Increase Nice Value
+            ProcessNode* curr  = process_list;
+            int          count = 0;
+            while (curr) {
+                if (search_query[0] == '\0' || strcasestr(curr->name, search_query) != NULL) {
+                    if (count == selection_idx) {
+                        int current_nice = getpriority(PRIO_PROCESS, curr->pid);
+                        int new_nice     = (ch == KEY_F(7)) ? current_nice - 1 : current_nice + 1;
+                        if (new_nice >= -20 && new_nice <= 19) {
+                            setpriority(PRIO_PROCESS, curr->pid, new_nice);
+                        }
+                        break;
+                    }
+                    count++;
+                }
+                curr = curr->next;
+            }
+        } else if (ch == '\n' || ch == KEY_ENTER) {
+            // New Feature: Show Process Details
+            ProcessNode* curr  = process_list;
+            int          count = 0;
+            while (curr) {
+                if (search_query[0] == '\0' || strcasestr(curr->name, search_query) != NULL) {
+                    if (count == selection_idx) {
+                        render_process_details(curr);
+                        break;
+                    }
+                    count++;
+                }
+                curr = curr->next;
+            }
         } else if (ch == '/') {
-            // Simple search input
+            // Integrated search input
+            mvprintw(5, 2, "FILTER: ");
+            clrtoeol();
             echo();
             curs_set(1);
-            mvprintw(5, 2, "Search: ");
             getnstr(search_query, sizeof(search_query) - 1);
             noecho();
             curs_set(0);
@@ -87,20 +129,21 @@ int main() {
             scroll_offset = 0;
         } else if (ch == 'h' || ch == 'H') {
             render_help();
-        } else if (ch == '+' || ch == '=') {
-            refresh_rate -= 100;
-            if (refresh_rate < 100) refresh_rate = 100;
-        } else if (ch == '-') {
-            refresh_rate += 100;
-            if (refresh_rate > 5000) refresh_rate = 5000;
-        } else if (ch == 'k' || ch == 'K') {
+        } else if (ch == 'k' || ch == 'K' || ch == KEY_F(9)) {
             // Kill selected process
-            ProcessNode* curr = process_list;
-            for (int i = 0; i < selection_idx && curr; i++) curr = curr->next;
-            if (curr) {
-                if (render_confirmation(curr->pid)) {
-                    kill(curr->pid, SIGTERM);
+            ProcessNode* curr  = process_list;
+            int          count = 0;
+            while (curr) {
+                if (search_query[0] == '\0' || strcasestr(curr->name, search_query) != NULL) {
+                    if (count == selection_idx) {
+                        if (render_confirmation(curr->pid)) {
+                            kill(curr->pid, SIGTERM);
+                        }
+                        break;
+                    }
+                    count++;
                 }
+                curr = curr->next;
             }
         }
 

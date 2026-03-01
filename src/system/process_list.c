@@ -1,7 +1,7 @@
 /**
  * @file process_list.c
  * @brief Implementation of process list building, sorting, and CPU calculation.
- * @version 1.1.1
+ * @version 2.0.0
  */
 
 #include "../../include/system/process_list.h"

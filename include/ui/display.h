@@ -1,7 +1,7 @@
 /**
  * @file display.h
  * @brief UI functions using ncurses for an aesthetic terminal display.
- * @version 1.1.1
+ * @version 2.0.0
  */
 
 #ifndef PROCX_DISPLAY_H
@@ -36,6 +36,12 @@ void render_help();
  * @return 1 if confirmed, 0 otherwise.
  */
 int render_confirmation(int pid);
+
+/**
+ * @brief Renders a detailed process view.
+ * @param proc Pointer to the process to display.
+ */
+void render_process_details(ProcessNode* proc);
 
 /**
  * @brief Cleans up and closes the ncurses interface.

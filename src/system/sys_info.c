@@ -1,7 +1,7 @@
 /**
  * @file sys_info.c
  * @brief Implementation of system info parsing from /proc.
- * @version 1.1.1
+ * @version 2.0.0
  */
 
 #include "../../include/system/sys_info.h"
@@ -22,9 +22,11 @@ int get_process_info(pid_t pid, ProcessNode* info) {
 
     info->pid = pid;
     // Format: pid (comm) state ppid pgrp session tty_nr tpgid flags minflt cminflt majflt cmajflt
-    // utime stime ... utime is 14th field, stime is 15th field
-    if (fscanf(file, "%*d (%255[^)]) %c %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", info->name,
-               &info->state, &info->ppid, &info->utime, &info->stime) < 5) {
+    // utime stime cutime cstime priority nice
+    if (fscanf(file,
+               "%*d (%255[^)]) %c %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu %*d %*d %ld %ld",
+               info->name, &info->state, &info->ppid, &info->utime, &info->stime, &info->priority,
+               &info->nice_value) < 7) {
         fclose(file);
         return -1;
     }

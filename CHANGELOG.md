@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-02
+
+### Added
+*   **Futuristic Cyber-Dark UI**: Complete visual overhaul with a neon-inspired aesthetic, utilizing high-contrast colors (Cyan, Magenta, Yellow) and sleek Unicode symbols.
+*   **Process Inspector**: New detailed view accessible via `ENTER` key, providing comprehensive process metadata (UID, PPID, exact memory, CPU ticks).
+*   **Real-time Priority Management**: Added support for adjusting process priority (`NI`/Nice value) directly from the UI using `F7` (Decrease) and `F8` (Increase).
+*   **Full Descriptive Status**: Replaced single-letter process states with clear, human-readable labels (RUNNING, SLEEPING, ZOMBIE, etc.) for better accessibility.
+*   **PID Sorting**: Added `F6` shortcut to sort the process list by Process ID.
+*   **Advanced Resource Meters**: Redesigned CPU, Memory, and Swap meters with a sleek `━━━╸` futuristic style and dynamic color-coding.
+*   **Integrated System Metrics**: Repositioned system-wide stats (Tasks, Load, Uptime) for a cleaner, more integrated dashboard layout.
+*   **Modern Bracketed Footer**: Refined shortcut navigation with high-tech bracketed keys and elegant separators.
+*   **Wide Character Support**: Switched to `ncursesw` for full Unicode compatibility and better rendering of modern terminal symbols.
+
+### Changed
+*   **Layout Refinement**: Optimized column spacing and alignment for a "pixel-perfect" tech-grid look.
+*   **Smart Truncation**: Improved command name handling to prevent layout breaking on smaller terminal windows.
+*   **Build System**: Updated `Makefile` to link against `libncursesw`.
+
 ## [1.1.1] - 2026-03-01
 
 ### Removed

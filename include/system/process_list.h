@@ -1,7 +1,7 @@
 /**
  * @file process_list.h
  * @brief Functions to scan, build, and sort the list of all running processes.
- * @version 1.1.1
+ * @version 2.0.0
  */
 
 #ifndef PROCX_PROCESS_LIST_H
