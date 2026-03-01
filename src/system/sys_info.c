@@ -1,7 +1,7 @@
 /**
  * @file sys_info.c
  * @brief Implementation of system info parsing from /proc.
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 #include "../../include/system/sys_info.h"
@@ -12,7 +12,7 @@
 #include <pwd.h>
 
 int get_process_info(pid_t pid, ProcessNode* info) {
-    char path[256];
+    char  path[256];
     FILE* file;
 
     // Get basic process information (name, state, ppid, utime, stime)
@@ -21,10 +21,10 @@ int get_process_info(pid_t pid, ProcessNode* info) {
     if (!file) return -1;
 
     info->pid = pid;
-    // Format: pid (comm) state ppid pgrp session tty_nr tpgid flags minflt cminflt majflt cmajflt utime stime ...
-    // utime is 14th field, stime is 15th field
-    if (fscanf(file, "%*d (%255[^)]) %c %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", 
-               info->name, &info->state, &info->ppid, &info->utime, &info->stime) < 5) {
+    // Format: pid (comm) state ppid pgrp session tty_nr tpgid flags minflt cminflt majflt cmajflt
+    // utime stime ... utime is 14th field, stime is 15th field
+    if (fscanf(file, "%*d (%255[^)]) %c %d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", info->name,
+               &info->state, &info->ppid, &info->utime, &info->stime) < 5) {
         fclose(file);
         return -1;
     }
@@ -93,14 +93,15 @@ void get_system_info(SystemInfo* sys_info, ProcessNode* head) {
     sys_info->running_tasks = 0;
     sys_info->total_tasks   = 0;
     sys_info->uptime_sec    = 0;
-    for(int i=0; i<3; i++) sys_info->load_avg[i] = 0.0;
+    for (int i = 0; i < 3; i++) sys_info->load_avg[i] = 0.0;
 
     // Parse Load Average
     if (getloadavg(sys_info->load_avg, 3) == -1) {
         // Fallback to /proc/loadavg if getloadavg fails
         file = fopen("/proc/loadavg", "r");
         if (file) {
-            fscanf(file, "%lf %lf %lf", &sys_info->load_avg[0], &sys_info->load_avg[1], &sys_info->load_avg[2]);
+            fscanf(file, "%lf %lf %lf", &sys_info->load_avg[0], &sys_info->load_avg[1],
+                   &sys_info->load_avg[2]);
             fclose(file);
         }
     }
@@ -164,12 +165,13 @@ void get_system_info(SystemInfo* sys_info, ProcessNode* head) {
                        &idle, &iowait, &irq, &softirq, &steal) == 8) {
                 unsigned long long prev_idle_sum = prev_idle + prev_iowait;
                 unsigned long long idle_sum      = idle + iowait;
-                unsigned long long prev_non_idle = prev_user + prev_nice + prev_system + prev_irq + prev_softirq + prev_steal;
-                unsigned long long non_idle = user + nice + system + irq + softirq + steal;
+                unsigned long long prev_non_idle =
+                    prev_user + prev_nice + prev_system + prev_irq + prev_softirq + prev_steal;
+                unsigned long long non_idle   = user + nice + system + irq + softirq + steal;
                 unsigned long long prev_total = prev_idle_sum + prev_non_idle;
                 unsigned long long total      = idle_sum + non_idle;
-                unsigned long long totald = total - prev_total;
-                unsigned long long idled  = idle_sum - prev_idle_sum;
+                unsigned long long totald     = total - prev_total;
+                unsigned long long idled      = idle_sum - prev_idle_sum;
 
                 if (totald > 0) {
                     sys_info->cpu_usage = (int)(100.0 * (double)(totald - idled) / (double)totald);

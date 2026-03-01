@@ -1,7 +1,7 @@
 /**
  * @file process.h
  * @brief Core data structures for ProcX.
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 #ifndef PROCX_PROCESS_H

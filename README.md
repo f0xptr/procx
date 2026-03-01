@@ -1,4 +1,4 @@
-# ProcX v1.1.0
+# ProcX
 
 ProcX is a lightweight, high-performance, ncurses-based process explorer and system monitoring tool for Linux. Written in C, it provides a modern, aesthetic, and real-time overview of your system's health, offering an interactive 'htop'-like experience directly in your terminal.
 

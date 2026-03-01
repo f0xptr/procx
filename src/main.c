@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @brief Entry point for ProcX with interactive loop and advanced features.
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 #include "../include/ui/display.h"
@@ -17,19 +17,19 @@
 int main() {
     init_ui();
     nodelay(stdscr, TRUE);
-    
-    int          ch;
-    int          scroll_offset = 0;
-    int          selection_idx = 0;
-    int          refresh_rate  = 1000; // ms
-    char         search_query[64] = "";
-    char         sort_col[10] = "CPU%";
+
+    int  ch;
+    int  scroll_offset                          = 0;
+    int  selection_idx                          = 0;
+    int  refresh_rate                           = 1000;  // ms
+    char search_query[64]                       = "";
+    char sort_col[10]                           = "CPU%";
     int (*sort_cmp)(ProcessNode*, ProcessNode*) = cmp_cpu;
 
     while (1) {
         timeout(refresh_rate);
         ProcessNode* process_list = build_process_list();
-        
+
         // Apply sorting
         if (sort_cmp) {
             sort_process_list(&process_list, sort_cmp);
@@ -44,11 +44,14 @@ int main() {
         } else if (ch == KEY_DOWN) {
             selection_idx++;
             // Basic boundary check (could be improved by counting filtered list)
-            int count = 0;
-            ProcessNode* curr = process_list;
-            while(curr) { count++; curr = curr->next; }
+            int          count = 0;
+            ProcessNode* curr  = process_list;
+            while (curr) {
+                count++;
+                curr = curr->next;
+            }
             if (selection_idx >= count) selection_idx = count - 1;
-            
+
             // Adjust scroll if selection goes off screen
             int max_y = getmaxy(stdscr);
             if (selection_idx - scroll_offset >= max_y - 10) {
@@ -93,7 +96,7 @@ int main() {
         } else if (ch == 'k' || ch == 'K') {
             // Kill selected process
             ProcessNode* curr = process_list;
-            for(int i=0; i<selection_idx && curr; i++) curr = curr->next;
+            for (int i = 0; i < selection_idx && curr; i++) curr = curr->next;
             if (curr) {
                 if (render_confirmation(curr->pid)) {
                     kill(curr->pid, SIGTERM);

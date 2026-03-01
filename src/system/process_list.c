@@ -1,20 +1,7 @@
 /**
  * @file process_list.c
- * @brief Implementation of process list building and memory management.
- * @version 1.1.0
- */
-
-#include "../../include/system/process_list.h"
-#include "../../include/system/sys_info.h"
-#include <dirent.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-
-/**
- * @file process_list.c
  * @brief Implementation of process list building, sorting, and CPU calculation.
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 #include "../../include/system/process_list.h"
@@ -31,13 +18,13 @@
  * @brief Stores previous tick counts for a process to calculate CPU usage.
  */
 typedef struct PrevTicks {
-    pid_t pid;
+    pid_t         pid;
     unsigned long utime;
     unsigned long stime;
 } PrevTicks;
 
-static PrevTicks* prev_ticks_list = NULL;
-static int prev_ticks_count = 0;
+static PrevTicks* prev_ticks_list  = NULL;
+static int        prev_ticks_count = 0;
 
 /**
  * @brief Updates or adds a process's ticks to the global tracking list.
@@ -51,7 +38,7 @@ static void update_prev_ticks(pid_t pid, unsigned long utime, unsigned long stim
         }
     }
     prev_ticks_list = realloc(prev_ticks_list, sizeof(PrevTicks) * (prev_ticks_count + 1));
-    prev_ticks_list[prev_ticks_count].pid = pid;
+    prev_ticks_list[prev_ticks_count].pid   = pid;
     prev_ticks_list[prev_ticks_count].utime = utime;
     prev_ticks_list[prev_ticks_count].stime = stime;
     prev_ticks_count++;
@@ -80,12 +67,12 @@ ProcessNode* build_process_list() {
     ProcessNode*   tail = NULL;
 
     static unsigned long long last_total_time = 0;
-    unsigned long long total_time = 0;
-    FILE* stat_file = fopen("/proc/stat", "r");
+    unsigned long long        total_time      = 0;
+    FILE*                     stat_file       = fopen("/proc/stat", "r");
     if (stat_file) {
         unsigned long long user, nice, system, idle, iowait, irq, softirq, steal;
-        if (fscanf(stat_file, "cpu %llu %llu %llu %llu %llu %llu %llu %llu",
-                   &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal) == 8) {
+        if (fscanf(stat_file, "cpu %llu %llu %llu %llu %llu %llu %llu %llu", &user, &nice, &system,
+                   &idle, &iowait, &irq, &softirq, &steal) == 8) {
             total_time = user + nice + system + idle + iowait + irq + softirq + steal;
         }
         fclose(stat_file);
@@ -95,14 +82,15 @@ ProcessNode* build_process_list() {
 
     while ((entry = readdir(dir)) != NULL) {
         if (isdigit(entry->d_name[0])) {
-            pid_t pid = (pid_t)atoi(entry->d_name);
+            pid_t        pid      = (pid_t)atoi(entry->d_name);
             ProcessNode* new_node = (ProcessNode*)malloc(sizeof(ProcessNode));
             if (!new_node) continue;
 
             if (get_process_info(pid, new_node) == 0) {
                 unsigned long prev_utime, prev_stime;
                 if (get_prev_ticks(pid, &prev_utime, &prev_stime) == 0 && total_time_diff > 0) {
-                    unsigned long process_diff = (new_node->utime + new_node->stime) - (prev_utime + prev_stime);
+                    unsigned long process_diff =
+                        (new_node->utime + new_node->stime) - (prev_utime + prev_stime);
                     new_node->cpu_usage = (float)(process_diff * 100.0) / total_time_diff;
                 } else {
                     new_node->cpu_usage = 0.0f;
@@ -145,10 +133,10 @@ static ProcessNode* merge(ProcessNode* a, ProcessNode* b, int (*cmp)(ProcessNode
 
     ProcessNode* result = NULL;
     if (cmp(a, b) <= 0) {
-        result = a;
+        result       = a;
         result->next = merge(a->next, b, cmp);
     } else {
-        result = b;
+        result       = b;
         result->next = merge(a, b->next, cmp);
     }
     return result;
@@ -171,8 +159,8 @@ static void split(ProcessNode* source, ProcessNode** front, ProcessNode** back) 
         }
     }
 
-    *front = source;
-    *back = slow->next;
+    *front     = source;
+    *back      = slow->next;
     slow->next = NULL;
 }
 
@@ -199,4 +187,3 @@ int cmp_pid(ProcessNode* a, ProcessNode* b) { return a->pid - b->pid; }
 int cmp_cpu(ProcessNode* a, ProcessNode* b) { return (b->cpu_usage > a->cpu_usage) ? 1 : -1; }
 int cmp_mem(ProcessNode* a, ProcessNode* b) { return b->memory_kb - a->memory_kb; }
 int cmp_name(ProcessNode* a, ProcessNode* b) { return strcasecmp(a->name, b->name); }
-

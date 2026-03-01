@@ -1,7 +1,7 @@
 /**
  * @file display.h
  * @brief UI functions using ncurses for an aesthetic terminal display.
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 #ifndef PROCX_DISPLAY_H
@@ -22,7 +22,8 @@ void init_ui();
  * @param search_query Current search string.
  * @param sort_col Current sorting column name.
  */
-void render_dashboard(ProcessNode* head, int scroll_offset, int selection_idx, const char* search_query, const char* sort_col);
+void render_dashboard(ProcessNode* head, int scroll_offset, int selection_idx,
+                      const char* search_query, const char* sort_col);
 
 /**
  * @brief Renders the help overlay.
