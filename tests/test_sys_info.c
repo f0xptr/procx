@@ -1,7 +1,7 @@
 /**
  * @file test_sys_info.c
  * @brief Unit tests for system information parsing.
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 #include "../include/system/sys_info.h"

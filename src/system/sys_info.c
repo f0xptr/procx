@@ -1,7 +1,7 @@
 /**
  * @file sys_info.c
  * @brief Implementation of system info parsing from /proc.
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 #include "../../include/system/sys_info.h"

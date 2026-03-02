@@ -1,7 +1,7 @@
 /**
  * @file sys_info.h
  * @brief System information gathering functions.
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 #ifndef PROCX_SYS_INFO_H

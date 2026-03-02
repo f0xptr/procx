@@ -1,7 +1,7 @@
 /**
  * @file display.c
  * @brief Final Polished "Cyber-Dark" UI for ProcX.
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 #ifndef _GNU_SOURCE

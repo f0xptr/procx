@@ -1,21 +1,31 @@
 # UI: Ncurses Display Functions
 
-This module handles all user interface rendering and interaction using the ncurses library, providing an aesthetic terminal-based dashboard for ProcX.
+This module handles all user interface rendering and interaction using the ncurses library, providing a futuristic "Cyber-Dark" terminal-based dashboard for ProcX.
 
 ### Functions
 
 ### `void init_ui()`
 
-*   **Description**: Initializes the ncurses environment. This includes setting up the screen, enabling color support, configuring input modes (cbreak, noecho), hiding the cursor, enabling special keys (like arrow keys), and defining the custom color pairs used throughout the application.
+*   **Description**: Initializes the ncurses environment with wide-character support. This includes setting the locale, setting up the screen, enabling color support, configuring input modes (cbreak, noecho), hiding the cursor, enabling special keys, and defining high-contrast neon color pairs.
 *   **Parameters**: None.
 *   **Returns**: `void`.
 
-### `void render_dashboard(ProcessNode *head, int scroll_offset)`
+### `void render_dashboard(ProcessNode *head, int scroll_offset, int selection_idx, const char* search_query, const char* sort_col)`
 
-*   **Description**: Clears the screen and renders the entire ProcX dashboard. This involves displaying the title bar, system resource meters (CPU, Memory, Swap), the process table header, and a dynamic list of processes. The process list is rendered starting from an offset to support scrolling.
+*   **Description**: Clears the screen and renders the main ProcX dashboard. This includes futuristic resource meters, integrated system metrics (tasks, load, uptime), a color-coded process table with descriptive status labels, and a stylized "command center" footer.
 *   **Parameters**:
-    *   `head`: A pointer to the head of the `ProcessNode` linked list, representing all active processes to be displayed.
-    *   `scroll_offset`: An integer indicating the number of processes to skip from the beginning of the list, used for vertical scrolling.
+    *   `head`: A pointer to the head of the `ProcessNode` linked list.
+    *   `scroll_offset`: Number of processes to skip for scrolling.
+    *   `selection_idx`: Index of the currently highlighted process.
+    *   `search_query`: Current filter string applied to process names.
+    *   `sort_col`: Name of the column currently used for sorting.
+*   **Returns**: `void`.
+
+### `void render_process_details(ProcessNode* proc)`
+
+*   **Description**: Renders a dedicated "Process Inspector" popup window showing exhaustive metadata for a specific process, including UID, PPID, exact memory in KB, and CPU time ticks.
+*   **Parameters**:
+    *   `proc`: Pointer to the `ProcessNode` to inspect.
 *   **Returns**: `void`.
 
 ### `void close_ui()`
@@ -24,13 +34,12 @@ This module handles all user interface rendering and interaction using the ncurs
 *   **Parameters**: None.
 *   **Returns**: `void`.
 
-### Helper Function: `void draw_meter(...)`
+### Internal Helpers
 
-*   **Description**: A static helper function used internally by `render_dashboard` to draw htop-style resource meters (e.g., for CPU, MEM, SWP). It renders a progress bar with a label, percentage, and usage/total values.
-*   **Parameters**: (See `src/ui/display.c` for full parameter details).
-    *   `y`, `x`: Screen coordinates for drawing.
-    *   `label`: Text label for the meter.
-    *   `percentage`: Current utilization percentage.
-    *   `color_pair`: Ncurses color pair for the meter bar.
-    *   `used`, `total`, `unit`: Optional usage details (e.g., MB, KB).
-*   **Returns**: `void`.
+#### `void draw_futuristic_meter(int y, int x, const char* label, int percentage, int base_pair)`
+
+*   **Description**: Draws a sleek futuristic progress bar (`━━━╸`) with dynamic color highlighting based on utilization.
+
+#### `void draw_pill_footer(int* x, int max_y, const char* key, const char* desc)`
+
+*   **Description**: Draws high-tech bracketed footer items (`⟨KEY⟩ DESC`) used for the shortcut navigation bar.

@@ -8,15 +8,20 @@ The `ProcessNode` is a fundamental building block for the process list within Pr
 
 ```c
 typedef struct ProcessNode {
-    pid_t pid;                  // Process ID
-    pid_t ppid;                 // Parent Process ID
-    uid_t uid;                  // User ID
-    char username[32];          // Username
-    int num_threads;            // Number of threads
-    char name[256];             // Name of the process executable
-    char state;                 // Process state (e.g., R, S, Z)
-    long memory_kb;             // Resident Set Size (RAM used) in KB
-    struct ProcessNode *next;   // Pointer to the next process in the list
+    pid_t               pid;          // Process ID
+    pid_t               ppid;         // Parent Process ID
+    uid_t               uid;          // User ID
+    char                username[32]; // Username
+    int                 num_threads;  // Number of threads
+    char                name[256];    // Name of the process executable
+    char                state;        // Process state (e.g., R, S, Z)
+    long                memory_kb;    // Resident Set Size (RAM used) in KB
+    float               cpu_usage;    // CPU usage percentage
+    unsigned long       utime;        // User time ticks
+    unsigned long       stime;        // Kernel time ticks
+    long                priority;     // Priority of the process
+    long                nice_value;   // Nice value of the process
+    struct ProcessNode* next;         // Pointer to the next process in the list
 } ProcessNode;
 ```
 
@@ -30,6 +35,11 @@ typedef struct ProcessNode {
 *   `name[256]`: A null-terminated string storing the name of the executable.
 *   `state`: A character representing the current state of the process (e.g., 'R' for running, 'S' for sleeping, 'Z' for zombie).
 *   `memory_kb`: The Resident Set Size (RSS) of the process, indicating the amount of RAM it is currently using, in kilobytes.
+*   `cpu_usage`: The percentage of CPU resources currently used by the process.
+*   `utime`: The number of CPU ticks spent in user mode.
+*   `stime`: The number of CPU ticks spent in kernel mode.
+*   `priority`: The dynamic priority of the process as assigned by the kernel.
+*   `nice_value`: The user-settable niceness value (affects priority).
 *   `next`: A pointer to the next `ProcessNode` in the linked list, or `NULL` if it is the last node.
 
 ### Usage

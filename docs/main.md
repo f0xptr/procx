@@ -17,8 +17,14 @@ The `main()` function serves as the heart of the ProcX application, orchestratin
     *   **Process List Refresh**: In each iteration, it calls `build_process_list()` to dynamically scan `/proc` and create an up-to-date linked list of running processes.
     *   **Dashboard Rendering**: Calls `render_dashboard()` to draw the current system information and the process list on the terminal screen. The `scroll_offset` is passed to manage vertical scrolling.
     *   **Input Handling**: Checks for user input using `getch()`.
-        *   If 'q' or 'Q' is pressed, the loop breaks, and the application exits.
-        *   If `KEY_UP` or `KEY_DOWN` is pressed, the `scroll_offset` is adjusted to enable navigation through the process list.
+        *   If 'q', 'Q', `KEY_F(10)`, or `ESC` (27) is pressed, the loop breaks, and the application exits.
+        *   If `KEY_UP` or `KEY_DOWN` is pressed, the `selection_idx` and `scroll_offset` are adjusted to enable navigation through the process list.
+        *   If `KEY_F(1)` is pressed, the help menu is displayed.
+        *   If `KEY_F(3)`, `KEY_F(4)`, `KEY_F(5)`, or `KEY_F(6)` is pressed, the process list is sorted by CPU, Memory, Name, or PID respectively.
+        *   If `KEY_F(7)` or `KEY_F(8)` is pressed, the nice value of the selected process is decreased or increased.
+        *   If `KEY_F(9)` or 'k'/'K' is pressed, a confirmation dialog appears to kill the selected process.
+        *   If `ENTER` is pressed, the **Process Inspector** view is triggered for the selected process.
+        *   If '/' is pressed, the user can enter a search string to filter the process list.
     *   **Memory Management**: Calls `free_process_list()` at the end of each iteration to release the memory allocated for the process list, preventing memory leaks and ensuring a clean state for the next refresh.
 
 3.  **UI Teardown**:

@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @brief Entry point for ProcX with interactive loop and advanced features.
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 #ifndef _GNU_SOURCE

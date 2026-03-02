@@ -1,7 +1,7 @@
 /**
  * @file display.h
  * @brief UI functions using ncurses for an aesthetic terminal display.
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 #ifndef PROCX_DISPLAY_H
